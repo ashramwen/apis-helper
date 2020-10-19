@@ -1,7 +1,6 @@
 {
   "name": "http-helper",
   "version": "1.0.0",
-  "private": true,
   "description": "A nice Http helper",
   "main": "build/index.js",
   "types": "build/index.d.ts",
