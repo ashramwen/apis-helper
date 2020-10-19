@@ -1,19 +1,22 @@
 {
-  "name": "inum.fe.utility",
+  "name": "http-helper",
   "version": "1.0.0",
   "private": true,
-  "description": "",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "description": "A nice Http helper",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "keywords": [
+    "http"
+  ],
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.yjtech.tw:8022/inum/inum-frontend-utility.git",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "url": "ssh://git@gitlab.yjtech.tw:8022/inum/inum-frontend-utility.git"
   },
   "author": "Augustine",
   "license": "ISC",
@@ -31,6 +34,6 @@
     "typescript": "^4.0.3"
   },
   "files": [
-    "lib/**/*"
+    "build/**/*"
   ]
 }
