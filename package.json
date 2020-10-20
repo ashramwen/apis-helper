@@ -1,6 +1,6 @@
 {
   "name": "utility-helper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A nice utility helper",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -8,10 +8,15 @@
     "http"
   ],
   "scripts": {
+    "test": "jest --config jestconfig.json",
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.ts\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn test && yarn lint",
+    "preversion": "yarn lint",
+    "version": "yarn format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -25,8 +30,11 @@
     "lodash.pick": "^4.4.0"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.162",
+    "jest": "^26.6.0",
     "prettier": "^2.1.2",
+    "ts-jest": "^26.4.1",
     "tslint": "^6.1.3",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^4.0.3"

@@ -86,10 +86,11 @@ export default class HttpHelper {
       (axiosResponse) => {
         this.turnOffLoading();
 
-        const { config, data } = axiosResponse;
-        if (data && data.status === 200) {
+        if (axiosResponse.status === 200) {
           return Promise.resolve(axiosResponse);
         }
+
+        const { config, data } = axiosResponse;
 
         const { code, status, message } = data;
 
@@ -243,7 +244,7 @@ export default class HttpHelper {
       const resp = await this.instance(apiConfig);
 
       logDebug('[callApi] ... SUCCESS', resp);
-      return resp.data;
+      return resp;
     } catch (requestError) {
       logDebug('[callApi] ... FAIL');
       logDebug(requestError);
