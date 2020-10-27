@@ -20,27 +20,42 @@ export default class HttpHelper {
   private instance;
 
   /**
-   * for loading ui counting
+   * loading ui count
    */
   private loadingCount = 0;
 
-  private config = {
-    loading: (on: any) => {},
-    apiUrl: '',
-    productApiUrl: '',
-    refreshToken: () => {},
+  /**
+   * refresh time period
+   */
+  private refreshTime = -1;
+
+  /**
+   * Timer for refresh timer
+   */
+  private timer = 0;
+
+  /**
+   * log out timer
+   */
+  private logoutTimeout?: number;
+
+  private config: HttpConfig = {
+    apiURL: '',
   };
 
-  constructor(config: any) {
-    this.instance = axios.create();
-    this.config = { ...this.config, ...config };
+  constructor(config: HttpConfig) {
     const self = this;
+
+    this.config = { ...this.config, ...config };
+
+    this.instance = axios.create({ baseURL: this.config.baseURL });
+
     /**
      * AXIOS middleware for HTTP request
      */
     this.instance.interceptors.request.use(
       (config: any) => {
-        const { loading, withoutAuth } = config;
+        const { ignoreExpiration, loading, withoutAuth } = config;
 
         loading && this.turnOnLoading();
 
@@ -57,7 +72,7 @@ export default class HttpHelper {
               config,
               requestInterceptorError: new NoAuthTokenError('No access token'),
             });
-          } else if (isTokenExpired(tokenObject)) {
+          } else if (!ignoreExpiration && isTokenExpired(tokenObject)) {
             return Promise.reject({
               config,
               requestInterceptorError: new AuthTokenExpiredError(
@@ -85,24 +100,25 @@ export default class HttpHelper {
        */
       (axiosResponse) => {
         this.turnOffLoading();
+        return Promise.resolve(axiosResponse);
 
-        if (axiosResponse.status === 200) {
-          return Promise.resolve(axiosResponse);
-        }
+        // if (axiosResponse.status === 200) {
+        //   return Promise.resolve(axiosResponse.data);
+        // }
 
-        const { config, data } = axiosResponse;
+        // const { config, data } = axiosResponse;
 
-        const { code, status, message } = data;
+        // const { code, status, message } = data;
 
-        const errorMessage =
-          message || `Server Error with code/status: ${code || status}`;
+        // const errorMessage =
+        //   message || `Server Error with code/status: ${code || status}`;
 
-        const requestError = new RequestError({
-          error: new BEResponseError(errorMessage),
-          config,
-          response: axiosResponse,
-        });
-        return Promise.reject(requestError);
+        // const requestError = new RequestError({
+        //   error: new BEResponseError(errorMessage),
+        //   config,
+        //   response: axiosResponse,
+        // });
+        // return Promise.reject(requestError);
       },
       /**
        * onReject
@@ -155,7 +171,8 @@ export default class HttpHelper {
           // waiting for token refreshing and retry
           return new Promise(async function (resolve, reject) {
             try {
-              await self.config.refreshToken();
+              typeof self.config.refreshToken === 'function' &&
+                (await self.config.refreshToken());
               error.config.retried = true;
               resolve(self.instance(error.config));
             } catch (error) {
@@ -203,7 +220,7 @@ export default class HttpHelper {
   }
 
   private invokeLoading = (on: boolean) => {
-    typeof this.config.loading === 'function' && this.config.loading(on);
+    typeof this.config.load === 'function' && this.config.load(on);
   };
 
   private turnOnLoading = () => {
@@ -225,8 +242,8 @@ export default class HttpHelper {
   private async _callApi(config: any) {
     try {
       const {
-        domain = this.config.apiUrl,
-        endpoint,
+        domain = this.config.apiURL,
+        endpoint = '',
         method = 'get',
         body,
         loading = true,
@@ -270,10 +287,36 @@ export default class HttpHelper {
    * @return {Promise<CallApiResultObject|RequestError>} result
    */
   callProductApi(config: any) {
-    return this._callApi({ ...config, domain: this.config.productApiUrl });
+    return this._callApi({ ...config, domain: this.config.productApiURL });
   }
 
-  private logoutTimeout?: number;
+  private refresh() {
+    const self = this;
+    if (typeof this.config.refreshToken === 'function') {
+      window.setTimeout(async () => {
+        typeof self.config.refreshToken === 'function' &&
+          (await self.config.refreshToken());
+        this.refreshTime > 0 && self.refresh();
+      }, this.refreshTime);
+    }
+  }
+
+  /**
+   * Refresh routine
+   * @param timeout Time period
+   */
+  set refreshTimer(timeout: number) {
+    if (timeout > 0) {
+      this.refreshTime = timeout;
+      this.refresh();
+    } else if (this.timer > -1) {
+      clearTimeout(this.timer);
+    }
+  }
+
+  /**
+   * Log out
+   */
   logout() {
     const self = this;
     if (!this.logoutTimeout) {

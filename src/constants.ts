@@ -18,4 +18,5 @@ export const PATHS_WHITELIST = [
   'enableNativeNotification',
   'headers',
   'loading',
+  'ignoreExpiration',
 ];
