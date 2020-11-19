@@ -1,6 +1,6 @@
 {
-  "name": "utility-helper",
-  "version": "1.0.1",
+  "name": "apis-helper",
+  "version": "1.0.0",
   "description": "A nice utility helper",
   "main": "build/index.js",
   "types": "build/index.d.ts",

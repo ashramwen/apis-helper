@@ -1,4 +1,3 @@
-import { delay } from 'lodash';
 import HttpHelper from '../HttpHelper';
 
 const apiURL = 'https://dev-inum-setting.yjtech.tw:55689/';
@@ -15,7 +14,7 @@ const refreshToken = () => {
 jest.useFakeTimers();
 
 describe('Test HttpHelper', () => {
-  const httpConfig = { apiURL, refreshToken };
+  const httpConfig = { baseURL: apiURL, refreshToken };
 
   it('works with async/await', async () => {
     expect.assertions(1);

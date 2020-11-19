@@ -10,6 +10,7 @@ import {
   BEResponseError,
 } from './Exception';
 import { logDebug } from './logDebug';
+import { HttpConfig } from './models/HttpConfig';
 
 export default class HttpHelper {
   DEBUG = false;
@@ -54,8 +55,8 @@ export default class HttpHelper {
      * AXIOS middleware for HTTP request
      */
     this.instance.interceptors.request.use(
-      (config: any) => {
-        const { ignoreExpiration, loading, withoutAuth } = config;
+      (config) => {
+        const { ignoreExpiration, loading, withoutAuth } = config as HttpConfig;
 
         loading && this.turnOnLoading();
 

@@ -15,7 +15,6 @@ export const PATHS_WHITELIST = [
   'body',
   'cancelToken',
   'withoutAuth',
-  'enableNativeNotification',
   'headers',
   'loading',
   'ignoreExpiration',

@@ -1,13 +1,10 @@
-interface HttpConfig {
-  /**
-   * API base url
-   */
-  baseURL?: string;
+import { AxiosRequestConfig } from 'axios';
 
+export interface HttpConfig extends AxiosRequestConfig {
   /**
    * API domain url
    */
-  apiURL: string;
+  apiURL?: string;
 
   /**
    * Product API domain url
@@ -33,4 +30,14 @@ interface HttpConfig {
    * Log out function
    */
   // logout?: Function;
+
+  domain?: any;
+  endpoint?: any;
+  method?: any;
+  body?: any;
+  cancelToken?: any;
+  withoutAuth?: any;
+  headers?: any;
+  loading?: any;
+  ignoreExpiration?: any;
 }
